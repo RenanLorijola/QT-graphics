@@ -45,12 +45,20 @@ void MainWindow::paintEvent(QPaintEvent *){
             break;
         case 4:
             width = 45;
-            painter.drawRect(centerX(screenWidth,width),30,width,width);
+            static const QPointF points[3] = {
+                QPointF(centerX(screenWidth,width), 70),
+                QPointF(centerX(screenWidth,width)+width, 70),
+                QPointF(centerX(screenWidth,width)+width/2, 30)
+            };
+            painter.drawPolygon(points, 3);
             break;
         case 5:
             width = 45;
+            painter.translate(centerX(screenWidth,width), 30);
             painter.rotate(45);
-            painter.drawRect(centerX(screenWidth,width),30,width,width);
+            painter.translate((sqrt(2)-1)*(width+30), 0);
+            painter.drawRect(0,0,width,width);
+            painter.resetTransform();
             break;
     }
 

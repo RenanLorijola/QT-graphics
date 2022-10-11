@@ -13,6 +13,10 @@ class OpenGLWidget : public QOpenGLWidget, protected QOpenGLFunctions_4_0_Core
 public:
     explicit OpenGLWidget(QWidget *parent = nullptr);
 
+private:
+    QTimer timer;
+    bool blinkFlag{false};
+
 public slots:
     void toggleDarkMode(bool);
 

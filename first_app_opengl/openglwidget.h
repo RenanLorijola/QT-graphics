@@ -2,9 +2,10 @@
 #define OPENGLWIDGET_H
 
 #include <QOpenGLWidget>
-//#include <QOpenGLExtraFunctions>
 #include <QOpenGLFunctions_4_0_Core>
-#include <QTimer>
+#include <QVector4D>
+#include <vector>
+#include <QFile>
 
 
 class OpenGLWidget : public QOpenGLWidget, protected QOpenGLFunctions_4_0_Core
@@ -12,19 +13,34 @@ class OpenGLWidget : public QOpenGLWidget, protected QOpenGLFunctions_4_0_Core
     Q_OBJECT
 public:
     explicit OpenGLWidget(QWidget *parent = nullptr);
+    ~OpenGLWidget();
+    GLuint vboVertices{0};
+    GLuint vboColors{0};
+    GLuint eboIndices{0};
+    GLuint vao{0};
 
-private:
-    QTimer timer;
-    bool blinkFlag{false};
+    std::vector<QVector4D> vertices;
+    std::vector<QVector4D> colors;
+    std::vector<GLuint> indices;
 
-public slots:
-    void toggleDarkMode(bool);
+    GLuint shaderProgram{0};
 
-signals:
+    void createVBOs();
+    void createShaders();
+
+    void destroyVBOs();
+    void destroyShaders();
+
+    void changeDiagonal();
+
 protected:
     void initializeGL();
     void resizeGL(int w, int h);
     void paintGL();
+
+public slots:
+    void toggleDarkMode(bool);
+
 };
 
 #endif // OPENGLWIDGET_H

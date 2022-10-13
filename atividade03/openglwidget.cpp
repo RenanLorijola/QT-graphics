@@ -28,6 +28,7 @@ void OpenGLWidget::paintGL(){
     glUseProgram(shaderProgram);
     glBindVertexArray(vao);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    changeDiagonal();
 }
 
 float fromRGBtoGLFloat (int value) {
@@ -170,4 +171,26 @@ void OpenGLWidget::destroyVBOs() {
     eboIndices=0;
     vboColors=0;
     vao=0;
+}
+
+void OpenGLWidget::changeDiagonal() {
+    makeCurrent();
+    glBindBuffer (GL_ELEMENT_ARRAY_BUFFER , eboIndices);
+    // glMappBuffer-> mac
+    auto idx{static_cast<GLuint*>(glMapBufferRange(GL_ELEMENT_ARRAY_BUFFER , 0,
+    indices.size()*sizeof(GL_UNSIGNED_INT),GL_MAP_WRITE_BIT))};
+    idx[0] = 0; idx[1] = 1; idx[2] = 3;
+    idx[3] = 1; idx[4] = 2; idx[5] = 3;
+    glUnmapBuffer (GL_ELEMENT_ARRAY_BUFFER) ;
+    update();
+}
+
+void OpenGLWidget::keyPressEvent(QKeyEvent
+*event)
+{
+    switch(event->key()){
+    case Qt::Key_Escape:
+        QApplication::quit();
+        break;//desnecessario
+    }
 }

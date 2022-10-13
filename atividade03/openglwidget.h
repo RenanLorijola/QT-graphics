@@ -6,6 +6,8 @@
 #include <QVector4D>
 #include <vector>
 #include <QFile>
+#include <QApplication>
+#include <QKeyEvent>
 
 
 class OpenGLWidget : public QOpenGLWidget, protected QOpenGLFunctions_4_0_Core
@@ -40,6 +42,7 @@ protected:
 
 public slots:
     void toggleDarkMode(bool);
+    void keyPressEvent(QKeyEvent *event);
 
 };
 

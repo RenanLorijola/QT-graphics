@@ -14,8 +14,27 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::SelectedDraw(int d){
-    qDebug() << d;
     typeOfDraw=d;
+    update();
+}
+
+void MainWindow::SelectedWidth(int w){
+    width=w;
+    update();
+}
+
+void MainWindow::SelectedRed(int r){
+    red=r;
+    update();
+}
+
+void MainWindow::SelectedGreen(int g){
+    green=g;
+    update();
+}
+
+void MainWindow::SelectedBlue(int b){
+    blue=b;
     update();
 }
 
@@ -26,38 +45,43 @@ int centerX(int screenWidth, int width){
 void MainWindow::paintEvent(QPaintEvent *){
     QPainter painter(this);
 
-    int screenWidth = 250;
-    int width = 30;
+    int screenWidth = 300;
+
+    QPointF triangle[3] = {
+        QPointF(centerX(screenWidth,width), 70),
+        QPointF(centerX(screenWidth,width)+width, 70),
+        QPointF(centerX(screenWidth,width)+width/2, 30)
+    };
+
+    QRectF rectangle(centerX(screenWidth,width),30,width,70);
+
+    QRectF square(centerX(screenWidth,width),30,width,width);
+
+    QRectF losangle(-(sqrt(2)-1)*width,-(sqrt(2)-1)*(width - 30),width,width);
+
+    QColor color(red, green , blue);
+    painter.setBrush(color);
+
     switch(typeOfDraw){
         case 0:
             break;
         case 1:
-            width = 30;
-            painter.drawRect(centerX(screenWidth,width),30,width,60);
+            painter.drawRect(rectangle);
             break;
         case 2:
-            width = 40;
-            painter.drawEllipse(centerX(screenWidth,width),30,width,width);
+            painter.drawEllipse(square);
             break;
         case 3:
-            width = 45;
-            painter.drawRect(centerX(screenWidth,width),30,width,width);
+            painter.drawRect(square);
             break;
         case 4:
-            width = 45;
-            static const QPointF points[3] = {
-                QPointF(centerX(screenWidth,width), 70),
-                QPointF(centerX(screenWidth,width)+width, 70),
-                QPointF(centerX(screenWidth,width)+width/2, 30)
-            };
-            painter.drawPolygon(points, 3);
+            painter.drawPolygon(triangle, 3);
             break;
         case 5:
-            width = 45;
             painter.translate(centerX(screenWidth,width), 30);
             painter.rotate(45);
             painter.translate((sqrt(2)-1)*(width+30), 0);
-            painter.drawRect(0,0,width,width);
+            painter.drawRect(losangle);
             painter.resetTransform();
             break;
     }

@@ -17,17 +17,22 @@ public:
     explicit OpenGLWidget(QWidget *parent = nullptr);
     ~OpenGLWidget();
 
-    void drawSolidSquare();
-    void drawColorSquare();
-    void drawCircle();
-    void drawHeart();
+    void drawBlueSquare();
+    void drawGraySquare();
+    void drawGrayTriangle();
+    void drawGreenTriangle();
+    void drawSunCircle();
+    void drawMoonCircle();
+    void drawPinkHeart();
+    void drawGrayHeart();
+    void drawBrownRectangle();
+    void drawGrayRectangle();
 
     bool DayNight{false};
 
-    GLuint vboVerticesSquare{0};
-    GLuint vboColorsSquare{0};
-    GLuint eboIndicesSquare{0};
     GLuint vaoSquare{0};
+    GLuint eboIndicesSquare{0};
+    GLuint vboVerticesSquare{0};
 
     GLuint vaoCircle{0};
     GLuint vboVerticesCircle{0};
@@ -36,9 +41,13 @@ public:
     GLuint vaoHeart{0};
     GLuint vboVerticesHeart{0};
 
-    std::vector<QVector4D> vertices;
-    std::vector<QVector4D> colors;
-    std::vector<GLuint> indices;
+    GLuint vaoTriangle{0};
+    GLuint eboIndicesTriangle{0};
+    GLuint vboVerticesTriangle{0};
+
+    GLuint vaoRectangle{0};
+    GLuint eboIndicesRectangle{0};
+    GLuint vboVerticesRectangle{0};
 
     GLuint shaderProgram{0};
 
@@ -47,8 +56,6 @@ public:
 
     void destroyVBOs();
     void destroyShaders();
-
-    void changeDiagonal();
 
 protected:
     void initializeGL();

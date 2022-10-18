@@ -25,33 +25,64 @@ void OpenGLWidget::initializeGL()
 
 void OpenGLWidget::resizeGL(int w, int h){}
 
-void OpenGLWidget::drawSolidSquare(){
+void OpenGLWidget::drawBlueSquare(){
     makeCurrent();
 
     glUseProgram(shaderProgram);
 
     auto locColor{glGetUniformLocation(shaderProgram, "vColor")};
-    glUniform4f(locColor, 1, 0, 0, 1);
+    glUniform4f(locColor, 0, 0, 1, 1);
 
     auto locSolidColor{glGetUniformLocation(shaderProgram, "solid_color")};
     glUniform1i(locSolidColor, 1);
 
     glBindVertexArray(vaoSquare);
-    //glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
-    //glDrawArrays(GL_LINE_LOOP, 0, 4);
     glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-    //glDrawArrays(GL_POINTS, 0, 4);
 }
 
-void OpenGLWidget::drawColorSquare(){
+void OpenGLWidget::drawGraySquare(){
+    makeCurrent();
+
     glUseProgram(shaderProgram);
+
+    auto locColor{glGetUniformLocation(shaderProgram, "vColor")};
+    glUniform4f(locColor, 0.68, 0.68, 0.68, 1);
+
     auto locSolidColor{glGetUniformLocation(shaderProgram, "solid_color")};
-    glUniform1i(locSolidColor, 0);
+    glUniform1i(locSolidColor, 1);
+
     glBindVertexArray(vaoSquare);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 }
 
-void OpenGLWidget::drawCircle(){
+void OpenGLWidget::drawGreenTriangle(){
+    makeCurrent();
+
+    glUseProgram(shaderProgram);
+
+    auto locColor{glGetUniformLocation(shaderProgram, "vColor")};
+    glUniform4f(locColor, 0, 1, 0, 1);
+
+    glBindVertexArray(vaoTriangle);
+    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+}
+
+void OpenGLWidget::drawGrayTriangle(){
+    makeCurrent();
+
+    glUseProgram(shaderProgram);
+
+    auto locColor{glGetUniformLocation(shaderProgram, "vColor")};
+    glUniform4f(locColor, 0.86, 0.86, 0.86, 1);
+
+    auto locSolidColor{glGetUniformLocation(shaderProgram, "solid_color")};
+    glUniform1i(locSolidColor, 1);
+
+    glBindVertexArray(vaoTriangle);
+    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+}
+
+void OpenGLWidget::drawSunCircle(){
     makeCurrent();
 
     glUseProgram(shaderProgram);
@@ -66,7 +97,22 @@ void OpenGLWidget::drawCircle(){
     glDrawArrays(GL_TRIANGLE_FAN, 0, steps);
 }
 
-void OpenGLWidget::drawHeart(){
+void OpenGLWidget::drawMoonCircle(){
+    makeCurrent();
+
+    glUseProgram(shaderProgram);
+
+    auto locColor{glGetUniformLocation(shaderProgram, "vColor")};
+    glUniform4f(locColor, 0.98, 0.95, 0.84, 1);
+
+    auto locSolidColor{glGetUniformLocation(shaderProgram, "solid_color")};
+    glUniform1i(locSolidColor, 1);
+
+    glBindVertexArray(vaoCircle);
+    glDrawArrays(GL_TRIANGLE_FAN, 0, steps);
+}
+
+void OpenGLWidget::drawPinkHeart(){
     makeCurrent();
     glUseProgram(shaderProgram);
 
@@ -80,15 +126,66 @@ void OpenGLWidget::drawHeart(){
     glDrawArrays(GL_TRIANGLE_FAN, 0, steps);
 };
 
+void OpenGLWidget::drawGrayHeart(){
+    makeCurrent();
+    glUseProgram(shaderProgram);
+
+    auto locColor{glGetUniformLocation(shaderProgram, "vColor")};
+    glUniform4f(locColor, 0.52, 0.52, 0.52, 1);
+
+    auto locSolidColor{glGetUniformLocation(shaderProgram, "solid_color")};
+    glUniform1i(locSolidColor, 1);
+
+    glBindVertexArray(vaoHeart);
+    glDrawArrays(GL_TRIANGLE_FAN, 0, steps);
+};
+
+void OpenGLWidget::drawBrownRectangle(){
+    makeCurrent();
+    glUseProgram(shaderProgram);
+
+    auto locColor{glGetUniformLocation(shaderProgram, "vColor")};
+    glUniform4f(locColor, 0.44, 0.3, 0.215, 1);
+
+    auto locSolidColor{glGetUniformLocation(shaderProgram, "solid_color")};
+    glUniform1i(locSolidColor, 1);
+
+    glBindVertexArray(vaoRectangle);
+    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+}
+
+void OpenGLWidget::drawGrayRectangle(){
+    makeCurrent();
+    glUseProgram(shaderProgram);
+
+    auto locColor{glGetUniformLocation(shaderProgram, "vColor")};
+    glUniform4f(locColor, 0.32, 0.32, 0.32, 1);
+
+    auto locSolidColor{glGetUniformLocation(shaderProgram, "solid_color")};
+    glUniform1i(locSolidColor, 1);
+
+    glBindVertexArray(vaoRectangle);
+    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+};
+
 void OpenGLWidget::paintGL(){
     glClear(GL_COLOR_BUFFER_BIT);
 
-    if(DayNight)
-        drawSolidSquare();
-    else
-        drawColorSquare();
-    drawCircle();
-    drawHeart();
+    if(DayNight){
+        drawGraySquare();
+        drawMoonCircle();
+        drawGrayTriangle();
+        drawGrayHeart();
+        drawGrayRectangle();
+    }
+    else {
+        drawSunCircle();
+        drawBlueSquare();
+        drawGreenTriangle();
+        drawPinkHeart();
+        drawBrownRectangle();
+    }
+
 }
 
 void OpenGLWidget::toggleDayNight(bool changeDayNight){
@@ -183,61 +280,118 @@ void OpenGLWidget::createVBOs() {
     makeCurrent();
     destroyVBOs();
 
-    std::vector<QVector4D> vertices;
-    std::vector<QVector4D> colors;
-    std::vector<GLuint> indices;
+    float windowXDivByY = 1.5;
 
-    vertices.resize(4);
-    colors.resize(4);
-    indices.resize(6); //2*3
 
-    float posx{0.3f};
-    float posy{0.3f};
-    float offset{0.2f};
+    //Square
+    std::vector<QVector4D> verticesSquare;
+    std::vector<GLuint> indicesSquare;
 
-    vertices[0] = QVector4D(posx - offset, posy - offset , 0, 1);
-    vertices[1] = QVector4D(posx + offset, posy - offset , 0, 1);
-    vertices[2] = QVector4D(posx + offset, posy + offset , 0, 1);
-    vertices[3] = QVector4D(posx - offset, posy + offset , 0, 1);
+    verticesSquare.resize(4);
+    indicesSquare.resize(6); //2*3
 
-    // Create colors for the vertices
-    colors[0] = QVector4D(1, 0, 0, 1); // Red
-    colors[1] = QVector4D(0, 1, 0, 1); // Green
-    colors[2] = QVector4D(0, 0, 1, 1); // Blue
-    colors[3] = QVector4D(1, 1, 0, 1); // Yellow
+    float posXSquare{-0.5f};
+    float posYSquare{-0.5f};
+    float offsetSquare{0.3f};
 
-    // Topology of the mesh ( square )
-    indices[0] = 0; indices[1] = 1; indices[2] = 2;
-    indices[3] = 2; indices[4] = 3; indices[5] = 0;
+    verticesSquare[0] = QVector4D(posXSquare - offsetSquare/windowXDivByY, posYSquare - offsetSquare , 0, 1);
+    verticesSquare[1] = QVector4D(posXSquare + offsetSquare/windowXDivByY, posYSquare - offsetSquare , 0, 1);
+    verticesSquare[2] = QVector4D(posXSquare + offsetSquare/windowXDivByY, posYSquare + offsetSquare , 0, 1);
+    verticesSquare[3] = QVector4D(posXSquare - offsetSquare/windowXDivByY, posYSquare + offsetSquare , 0, 1);
+
+    indicesSquare[0] = 0; indicesSquare[1] = 1; indicesSquare[2] = 2;
+    indicesSquare[3] = 2; indicesSquare[4] = 3; indicesSquare[5] = 0;
 
     glGenVertexArrays(1,&vaoSquare);
     glBindVertexArray(vaoSquare);
 
     glGenBuffers(1,&vboVerticesSquare);
     glBindBuffer(GL_ARRAY_BUFFER,vboVerticesSquare);
-    glBufferData(GL_ARRAY_BUFFER, vertices.size()*sizeof(QVector4D),vertices.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, verticesSquare.size()*sizeof(QVector4D),verticesSquare.data(), GL_STATIC_DRAW);
     glVertexAttribPointer(0,4,GL_FLOAT,GL_FALSE,0,nullptr);
     glEnableVertexAttribArray(0);
 
-    glGenBuffers (1, &vboColorsSquare);
-    glBindBuffer (GL_ARRAY_BUFFER,vboColorsSquare);
-    glBufferData (GL_ARRAY_BUFFER,colors.size()*sizeof(QVector4D),colors.data(), GL_STATIC_DRAW);
-    glVertexAttribPointer (1, 4, GL_FLOAT , GL_FALSE , 0, nullptr);
-    glEnableVertexAttribArray (1);
-
     glGenBuffers (1, &eboIndicesSquare);
     glBindBuffer (GL_ELEMENT_ARRAY_BUFFER , eboIndicesSquare);
-    glBufferData (GL_ELEMENT_ARRAY_BUFFER , indices.size() * sizeof (GLuint), indices.data(), GL_STATIC_DRAW);
+    glBufferData (GL_ELEMENT_ARRAY_BUFFER , indicesSquare.size() * sizeof (GLuint), indicesSquare.data(), GL_STATIC_DRAW);
 
+
+    //Triangle
+    std::vector<QVector4D> verticesTriangle;
+    std::vector<GLuint> indicesTriangle;
+
+    verticesTriangle.resize(3);
+    indicesTriangle.resize(3);
+
+    float posXTriangle{-0.77f};
+    float posYTriangle{-0.2f};
+    float widthTriangle{0.8f};
+    float heightTriangle{0.3f};
+
+    verticesTriangle[0] = QVector4D(posXTriangle, posYTriangle, 0, 1);
+    verticesTriangle[1] = QVector4D(posXTriangle + (widthTriangle/2)/windowXDivByY, posYTriangle + heightTriangle, 0, 1);
+    verticesTriangle[2] = QVector4D(posXTriangle + widthTriangle/windowXDivByY, posYTriangle, 0, 1);
+
+    indicesTriangle[0] = 0; indicesTriangle[1] = 1; indicesTriangle[2] = 2;
+
+    glGenVertexArrays(1,&vaoTriangle);
+    glBindVertexArray(vaoTriangle);
+
+    glGenBuffers(1,&vboVerticesTriangle);
+    glBindBuffer(GL_ARRAY_BUFFER,vboVerticesTriangle);
+    glBufferData(GL_ARRAY_BUFFER, verticesTriangle.size()*sizeof(QVector4D),verticesTriangle.data(), GL_STATIC_DRAW);
+    glVertexAttribPointer(0,4,GL_FLOAT,GL_FALSE,0,nullptr);
+    glEnableVertexAttribArray(0);
+
+    glGenBuffers (1, &eboIndicesTriangle);
+    glBindBuffer (GL_ELEMENT_ARRAY_BUFFER , eboIndicesTriangle);
+    glBufferData (GL_ELEMENT_ARRAY_BUFFER , indicesTriangle.size() * sizeof (GLuint), indicesTriangle.data(), GL_STATIC_DRAW);
+
+
+    //Rectangle
+    std::vector<QVector4D> verticesRectangle;
+    std::vector<GLuint> indicesRectangle;
+
+    verticesRectangle.resize(4);
+    indicesRectangle.resize(6);
+
+    float posXRectangle{0.6f};
+    float posYRectangle{-0.5f};
+    float offsetXRectangle{0.09f};
+    float offsetYRectangle{0.3f};
+
+    verticesRectangle[0] = QVector4D(posXRectangle - offsetXRectangle/windowXDivByY, posYRectangle - offsetYRectangle , 0, 1);
+    verticesRectangle[1] = QVector4D(posXRectangle + offsetXRectangle/windowXDivByY, posYRectangle - offsetYRectangle , 0, 1);
+    verticesRectangle[2] = QVector4D(posXRectangle + offsetXRectangle/windowXDivByY, posYRectangle + offsetYRectangle , 0, 1);
+    verticesRectangle[3] = QVector4D(posXRectangle - offsetXRectangle/windowXDivByY, posYRectangle + offsetYRectangle , 0, 1);
+
+    indicesRectangle[0] = 0; indicesRectangle[1] = 1; indicesRectangle[2] = 2;
+    indicesRectangle[3] = 2; indicesRectangle[4] = 3; indicesRectangle[5] = 0;
+
+    glGenVertexArrays(1,&vaoRectangle);
+    glBindVertexArray(vaoRectangle);
+
+    glGenBuffers(1,&vboVerticesRectangle);
+    glBindBuffer(GL_ARRAY_BUFFER,vboVerticesRectangle);
+    glBufferData(GL_ARRAY_BUFFER, verticesRectangle.size()*sizeof(QVector4D),verticesRectangle.data(), GL_STATIC_DRAW);
+    glVertexAttribPointer(0,4,GL_FLOAT,GL_FALSE,0,nullptr);
+    glEnableVertexAttribArray(0);
+
+    glGenBuffers (1, &eboIndicesRectangle);
+    glBindBuffer (GL_ELEMENT_ARRAY_BUFFER , eboIndicesRectangle);
+    glBufferData (GL_ELEMENT_ARRAY_BUFFER , indicesRectangle.size() * sizeof (GLuint), indicesRectangle.data(), GL_STATIC_DRAW);
+
+
+    //Circle
     glGenVertexArrays(1,&vaoCircle);
     glBindVertexArray(vaoCircle);
 
     std::vector<QVector4D> verticesCircle;
     verticesCircle.resize(steps);
     for(unsigned int i{0}; i < steps; i++){
-        float os[2] = {-0.5, 0.5};
-        float r[2] = {0.1, 0.08};
-        verticesCircle[i] = QVector4D(os[0] + r[0]*sin(qDegreesToRadians(i)), os[1] + r[1]*cos(qDegreesToRadians(i)), 0, 1);
+        float os[2] = {0.6, 0.7};
+        float r[2] = {0.15, 0.15};
+        verticesCircle[i] = QVector4D(os[0] + r[0]*sin(qDegreesToRadians(i))/windowXDivByY, os[1] + r[1]*cos(qDegreesToRadians(i)), 0, 1);
     }
 
     glGenBuffers(1, &vboVerticesCircle);
@@ -247,6 +401,7 @@ void OpenGLWidget::createVBOs() {
     glEnableVertexAttribArray(0);
 
 
+    //Heart
     glGenVertexArrays(1, &vaoHeart);
     glBindVertexArray(vaoHeart);
 
@@ -255,7 +410,7 @@ void OpenGLWidget::createVBOs() {
     for(unsigned int i{0}; i < steps; i++){
         double t = qDegreesToRadians(i);
         float d[2] = {-0.5, -0.5};
-        verticesHeart[i] = QVector4D(d[0] + 0.16*sin(t) * sin(t) * sin(t), d[1] + 0.13*cos(t)-0.05*cos(2*t)-0.02*cos(3*t)-0.01*cos(4*t), 0, 1);
+        verticesHeart[i] = QVector4D(d[0] + 0.08*sin(t) * sin(t) * sin(t)/windowXDivByY, d[1] + 0.065*cos(t)-0.025*cos(2*t)-0.01*cos(3*t)-0.005*cos(4*t), 0, 1);
     }
 
     glGenBuffers(1, &vboVerticesHeart);
@@ -267,7 +422,6 @@ void OpenGLWidget::createVBOs() {
 
 void OpenGLWidget::destroyVBOs() {
     makeCurrent ();
-    glDeleteBuffers(1, &vboColorsSquare);
     glDeleteBuffers (1, &vboVerticesSquare);
     glDeleteBuffers (1, &vboVerticesCircle);
     glDeleteBuffers (1, &vboVerticesHeart);
@@ -275,7 +429,6 @@ void OpenGLWidget::destroyVBOs() {
     glDeleteVertexArrays (1, &vaoHeart);
     glDeleteVertexArrays (1, &vaoSquare);
     glDeleteVertexArrays (1, &vaoCircle);
-    vboColorsSquare=0;
     vboVerticesSquare=0;
     vboVerticesCircle=0;
     vboVerticesHeart=0;
@@ -283,18 +436,6 @@ void OpenGLWidget::destroyVBOs() {
     vaoHeart=0;
     vaoSquare=0;
     vaoCircle=0;
-}
-
-void OpenGLWidget::changeDiagonal() {
-    makeCurrent();
-    glBindBuffer (GL_ELEMENT_ARRAY_BUFFER , eboIndicesSquare);
-    // glMappBuffer-> mac
-    auto idx{static_cast<GLuint*>(glMapBufferRange(GL_ELEMENT_ARRAY_BUFFER , 0,
-    indices.size()*sizeof(GL_UNSIGNED_INT),GL_MAP_WRITE_BIT))};
-    idx[0] = 0; idx[1] = 1; idx[2] = 3;
-    idx[3] = 1; idx[4] = 2; idx[5] = 3;
-    glUnmapBuffer (GL_ELEMENT_ARRAY_BUFFER) ;
-    update();
 }
 
 void OpenGLWidget::keyPressEvent(QKeyEvent

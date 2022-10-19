@@ -27,6 +27,8 @@ public:
     void drawGrayHeart();
     void drawBrownRectangle();
     void drawGrayRectangle();
+    void drawGreenOctagon();
+    void drawGrayOctagon();
 
     bool DayNight{false};
 
@@ -48,6 +50,10 @@ public:
     GLuint vaoRectangle{0};
     GLuint eboIndicesRectangle{0};
     GLuint vboVerticesRectangle{0};
+
+    GLuint vaoOctagon{0};
+    GLuint eboIndicesOctagon{0};
+    GLuint vboVerticesOctagon{0};
 
     GLuint shaderProgram{0};
 

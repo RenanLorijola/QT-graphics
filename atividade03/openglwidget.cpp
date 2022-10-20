@@ -179,7 +179,7 @@ void OpenGLWidget::drawGreenOctagon(){
     glUniform1i(locSolidColor, 1);
 
     glBindVertexArray(vaoOctagon);
-    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+    glDrawArrays(GL_TRIANGLE_FAN, 0, 8);
 };
 
 void OpenGLWidget::drawGrayOctagon(){
@@ -193,7 +193,7 @@ void OpenGLWidget::drawGrayOctagon(){
     glUniform1i(locSolidColor, 1);
 
     glBindVertexArray(vaoOctagon);
-    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+    glDrawArrays(GL_TRIANGLE_FAN, 0, 8);
 };
 
 void OpenGLWidget::paintGL(){
@@ -461,14 +461,6 @@ void OpenGLWidget::createVBOs() {
     float heightOctagon{0.3f};
     float widthOctagon{0.5f};
 
-//    verticesOctagon[0] = QVector4D(posXOctagon, posYOctagon - (heightOctagon/2.0), 0, 1);
-//    verticesOctagon[1] = QVector4D(posXOctagon + (widthOctagon/6.0)/windowXDivByY, posYOctagon - (heightOctagon/6.0) , 0, 1);
-//    verticesOctagon[2] = QVector4D(posXOctagon + (widthOctagon/2.0)/windowXDivByY, posYOctagon , 0, 1);
-//    verticesOctagon[3] = QVector4D(posXOctagon + (widthOctagon*5.0/6.0)/windowXDivByY, posYOctagon - (heightOctagon/6.0) , 0, 1);
-//    verticesOctagon[4] = QVector4D(posXOctagon + widthOctagon/windowXDivByY, posYOctagon - (heightOctagon/2.0) , 0, 1);
-//    verticesOctagon[5] = QVector4D(posXOctagon + (widthOctagon*5.0/6.0)/windowXDivByY, posYOctagon - (heightOctagon*5.0/6.0) , 0, 1);
-//    verticesOctagon[6] = QVector4D(posXOctagon + (widthOctagon/2.0)/windowXDivByY, posYOctagon - heightOctagon , 0, 1);
-//    verticesOctagon[7] = QVector4D(posXOctagon + (widthOctagon/6.0)/windowXDivByY, posYOctagon - (heightOctagon*5.0/6.0) , 0, 1);
     verticesOctagon[0] = QVector4D(posXOctagon, posYOctagon - (heightOctagon/2.0), 0, 1);
     verticesOctagon[1] = QVector4D(posXOctagon + (widthOctagon/6.0)/windowXDivByY, posYOctagon - (heightOctagon/6.0) , 0, 1);
     verticesOctagon[2] = QVector4D(posXOctagon + (widthOctagon/2.0)/windowXDivByY, posYOctagon , 0, 1);
@@ -478,15 +470,6 @@ void OpenGLWidget::createVBOs() {
     verticesOctagon[6] = QVector4D(posXOctagon + (widthOctagon/2.0)/windowXDivByY, posYOctagon - heightOctagon , 0, 1);
     verticesOctagon[7] = QVector4D(posXOctagon + (widthOctagon/6.0)/windowXDivByY, posYOctagon - (heightOctagon*5.0/6.0) , 0, 1);
     verticesOctagon[8] = QVector4D(posXOctagon, posYOctagon - (heightOctagon/2.0), 0, 1);
-//    indicesOctagon[0] = 0; indicesOctagon[1] = 1; indicesOctagon[2] = 2;
-//    indicesOctagon[3] = 3; indicesOctagon[4] = 4; indicesOctagon[5] = 5;
-//    indicesOctagon[6] = 6; indicesOctagon[7] = 7; indicesOctagon[8] = 8;
-//    indicesOctagon[6] = 2; indicesOctagon[7] = 9; indicesOctagon[8] = 3;
-//    indicesOctagon[9] = 3; indicesOctagon[10] = 9; indicesOctagon[11] = 4;
-//    indicesOctagon[12] = 4; indicesOctagon[13] = 9; indicesOctagon[14] = 5;
-//    indicesOctagon[15] = 5; indicesOctagon[16] = 9; indicesOctagon[17] = 6;
-//    indicesOctagon[18] = 6; indicesOctagon[19] = 9; indicesOctagon[20] = 7;
-//    indicesOctagon[21] = 7; indicesOctagon[22] = 9; indicesOctagon[23] = 8;
 
     glGenVertexArrays(1,&vaoOctagon);
     glBindVertexArray(vaoOctagon);
@@ -496,10 +479,6 @@ void OpenGLWidget::createVBOs() {
     glBufferData(GL_ARRAY_BUFFER, verticesOctagon.size()*sizeof(QVector4D),verticesOctagon.data(), GL_STATIC_DRAW);
     glVertexAttribPointer(0,4,GL_FLOAT,GL_FALSE,0,nullptr);
     glEnableVertexAttribArray(0);
-
-//    glGenBuffers (1, &eboIndicesOctagon);
-//    glBindBuffer (GL_ELEMENT_ARRAY_BUFFER , eboIndicesOctagon);
-//    glBufferData (GL_ELEMENT_ARRAY_BUFFER , indicesOctagon.size() * sizeof (GLuint), indicesOctagon.data(), GL_STATIC_DRAW);
 }
 
 void OpenGLWidget::destroyVBOs() {

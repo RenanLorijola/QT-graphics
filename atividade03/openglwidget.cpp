@@ -37,7 +37,7 @@ void OpenGLWidget::drawBlueSquare(){
     glUniform1i(locSolidColor, 1);
 
     glBindVertexArray(vaoSquare);
-    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+    glDrawElements(GL_TRIANGLE_FAN, indicesSquare.size(), GL_UNSIGNED_INT, 0);
 }
 
 void OpenGLWidget::drawGraySquare(){
@@ -52,7 +52,7 @@ void OpenGLWidget::drawGraySquare(){
     glUniform1i(locSolidColor, 1);
 
     glBindVertexArray(vaoSquare);
-    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+    glDrawElements(GL_TRIANGLE_FAN, indicesSquare.size(), GL_UNSIGNED_INT, 0);
 }
 
 void OpenGLWidget::drawGreenTriangle(){
@@ -73,7 +73,7 @@ void OpenGLWidget::drawGrayTriangle(){
     glUseProgram(shaderProgram);
 
     auto locColor{glGetUniformLocation(shaderProgram, "vColor")};
-    glUniform4f(locColor, 0.86, 0.86, 0.86, 1);
+    glUniform4f(locColor, 0.28, 0.28, 0.28, 1);
 
     auto locSolidColor{glGetUniformLocation(shaderProgram, "solid_color")};
     glUniform1i(locSolidColor, 1);
@@ -315,10 +315,9 @@ void OpenGLWidget::createVBOs() {
 
     //Square
     std::vector<QVector4D> verticesSquare;
-    std::vector<GLuint> indicesSquare;
 
     verticesSquare.resize(4);
-    indicesSquare.resize(6); //2*3
+    indicesSquare.resize(6);
 
     float posXSquare{-0.5f};
     float posYSquare{-0.5f};
@@ -348,10 +347,8 @@ void OpenGLWidget::createVBOs() {
 
     //Triangle
     std::vector<QVector4D> verticesTriangle;
-    std::vector<GLuint> indicesTriangle;
 
     verticesTriangle.resize(3);
-    indicesTriangle.resize(3);
 
     float posXTriangle{-0.77f};
     float posYTriangle{-0.2f};
@@ -362,8 +359,6 @@ void OpenGLWidget::createVBOs() {
     verticesTriangle[1] = QVector4D(posXTriangle + (widthTriangle/2)/windowXDivByY, posYTriangle + heightTriangle, 0, 1);
     verticesTriangle[2] = QVector4D(posXTriangle + widthTriangle/windowXDivByY, posYTriangle, 0, 1);
 
-    indicesTriangle[0] = 0; indicesTriangle[1] = 1; indicesTriangle[2] = 2;
-
     glGenVertexArrays(1,&vaoTriangle);
     glBindVertexArray(vaoTriangle);
 
@@ -373,17 +368,10 @@ void OpenGLWidget::createVBOs() {
     glVertexAttribPointer(0,4,GL_FLOAT,GL_FALSE,0,nullptr);
     glEnableVertexAttribArray(0);
 
-    glGenBuffers (1, &eboIndicesTriangle);
-    glBindBuffer (GL_ELEMENT_ARRAY_BUFFER , eboIndicesTriangle);
-    glBufferData (GL_ELEMENT_ARRAY_BUFFER , indicesTriangle.size() * sizeof (GLuint), indicesTriangle.data(), GL_STATIC_DRAW);
-
-
     //Rectangle
     std::vector<QVector4D> verticesRectangle;
-    std::vector<GLuint> indicesRectangle;
 
     verticesRectangle.resize(4);
-    indicesRectangle.resize(6);
 
     float posXRectangle{0.6f};
     float posYRectangle{-0.5f};
@@ -395,9 +383,6 @@ void OpenGLWidget::createVBOs() {
     verticesRectangle[2] = QVector4D(posXRectangle + offsetXRectangle/windowXDivByY, posYRectangle + offsetYRectangle , 0, 1);
     verticesRectangle[3] = QVector4D(posXRectangle - offsetXRectangle/windowXDivByY, posYRectangle + offsetYRectangle , 0, 1);
 
-    indicesRectangle[0] = 0; indicesRectangle[1] = 1; indicesRectangle[2] = 2;
-    indicesRectangle[3] = 2; indicesRectangle[4] = 3; indicesRectangle[5] = 0;
-
     glGenVertexArrays(1,&vaoRectangle);
     glBindVertexArray(vaoRectangle);
 
@@ -406,11 +391,6 @@ void OpenGLWidget::createVBOs() {
     glBufferData(GL_ARRAY_BUFFER, verticesRectangle.size()*sizeof(QVector4D),verticesRectangle.data(), GL_STATIC_DRAW);
     glVertexAttribPointer(0,4,GL_FLOAT,GL_FALSE,0,nullptr);
     glEnableVertexAttribArray(0);
-
-    glGenBuffers (1, &eboIndicesRectangle);
-    glBindBuffer (GL_ELEMENT_ARRAY_BUFFER , eboIndicesRectangle);
-    glBufferData (GL_ELEMENT_ARRAY_BUFFER , indicesRectangle.size() * sizeof (GLuint), indicesRectangle.data(), GL_STATIC_DRAW);
-
 
     //Circle
     glGenVertexArrays(1,&vaoCircle);
@@ -451,15 +431,13 @@ void OpenGLWidget::createVBOs() {
 
     //Octagon
     std::vector<QVector4D> verticesOctagon;
-    std::vector<GLuint> indicesOctagon;
 
     verticesOctagon.resize(9);
-    indicesOctagon.resize(8);
 
-    float posXOctagon{0.435f};
-    float posYOctagon{0.0f};
-    float heightOctagon{0.3f};
-    float widthOctagon{0.5f};
+    float posXOctagon{0.265f};
+    float posYOctagon{0.2f};
+    float heightOctagon{0.5f};
+    float widthOctagon{1.0f};
 
     verticesOctagon[0] = QVector4D(posXOctagon, posYOctagon - (heightOctagon/2.0), 0, 1);
     verticesOctagon[1] = QVector4D(posXOctagon + (widthOctagon/6.0)/windowXDivByY, posYOctagon - (heightOctagon/6.0) , 0, 1);
@@ -482,21 +460,33 @@ void OpenGLWidget::createVBOs() {
 }
 
 void OpenGLWidget::destroyVBOs() {
-    makeCurrent ();
+    makeCurrent();
     glDeleteBuffers (1, &vboVerticesSquare);
+    glDeleteBuffers (1, &vboVerticesTriangle);
+    glDeleteBuffers (1, &vboVerticesRectangle);
     glDeleteBuffers (1, &vboVerticesCircle);
     glDeleteBuffers (1, &vboVerticesHeart);
+    glDeleteBuffers (1, &vboVerticesOctagon);
     glDeleteBuffers (1, &eboIndicesSquare);
-    glDeleteVertexArrays (1, &vaoHeart);
     glDeleteVertexArrays (1, &vaoSquare);
+    glDeleteVertexArrays (1, &vaoTriangle);
+    glDeleteVertexArrays (1, &vaoRectangle);
     glDeleteVertexArrays (1, &vaoCircle);
-    vboVerticesSquare=0;
+    glDeleteVertexArrays (1, &vaoHeart);
+    glDeleteVertexArrays (1, &vaoOctagon);
+    vboVerticesSquare = 0;
+    vboVerticesTriangle=0;
+    vboVerticesRectangle=0;
     vboVerticesCircle=0;
     vboVerticesHeart=0;
+    vboVerticesOctagon=0;
     eboIndicesSquare=0;
-    vaoHeart=0;
     vaoSquare=0;
+    vaoTriangle=0;
+    vaoRectangle=0;
     vaoCircle=0;
+    vaoHeart=0;
+    vaoOctagon=0;
 }
 
 void OpenGLWidget::keyPressEvent(QKeyEvent

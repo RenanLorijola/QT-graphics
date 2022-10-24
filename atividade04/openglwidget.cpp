@@ -36,30 +36,49 @@ void OpenGLWidget::paintGL(){
     GLint locScaling{glGetUniformLocation(shaderProgram, "scaling")};
     GLint locTranslation{glGetUniformLocation(shaderProgram, "translation")};
 
-    glBindVertexArray(vao);
-
-    //Player
-    glUniform4f(locTranslation, -0.8f, playerPosY, 0, 0);
-    glUniform1f(locScaling,0.2f);
-    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
-
     //Target
     glUniform4f(locTranslation, 0.8f, targetPosY, 0, 0);
+    glUniform1f(locScaling, 0.2f);
+
+    glBindVertexArray(vaoTriangle);
+    glDrawElements(GL_TRIANGLES, indicesTriangle.size(), GL_UNSIGNED_INT, 0);
+
+    //Player
+    glBindVertexArray(vaoSquare);
+    glUniform4f(locTranslation, -0.8f, playerPosY, 0, 0);
     glUniform1f(locScaling,0.2f);
-    glDrawElements(GL_LINE_STRIP, indices.size(), GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, indicesSquare.size(), GL_UNSIGNED_INT, 0);
+
+    if(blinkScreenTime > 0){
+        glClearColor(1,1,1,1);
+    } else {
+        glClearColor(0,0,0,1);
+    }
+
+    glBindVertexArray(vaoRectangle);
 
     //Projectile
     if(shooting){
         glUniform4f(locTranslation, projectilePos[0], projectilePos[1], 0, 0);
-        glUniform1f(locScaling,0.05f);
-        //glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
-        glDrawArrays(GL_LINES, 0, 2);
-        glDrawArrays(GL_LINES, 2, 2);
+        if(shootingCounter % 5 == 0){
+            glUniform1f(locScaling,0.08f);
+        } else {
+            glUniform1f(locScaling,0.02f);
+        }
+        glDrawElements(GL_TRIANGLES, indicesRectangle.size(), GL_UNSIGNED_INT, 0);
     }
-}
 
-float fromRGBtoGLFloat (int value) {
-    return value/255.0;
+    //Ammo
+    glUniform1f(locScaling,0.01f);
+    if(shootingCounter % 5){
+        for(int i = shootingCounter % 5; i < 5; i ++){
+            glUniform4f(locTranslation, -0.9f + 0.05f*(i-1), 0.9f, 0, 0);
+            glDrawElements(GL_TRIANGLES, indicesRectangle.size(), GL_UNSIGNED_INT, 0);
+        }
+    }
+    glUniform1f(locScaling, 0.04f);
+    glUniform4f(locTranslation, -0.67f, 0.9f, 0, 0);
+    glDrawElements(GL_TRIANGLES, indicesRectangle.size(), GL_UNSIGNED_INT, 0);
 }
 
 void OpenGLWidget::createShaders(){
@@ -138,54 +157,132 @@ void OpenGLWidget::destroyShaders() {
 }
 
 void OpenGLWidget::createVBOs() {
+
+
     makeCurrent();
     destroyVBOs();
-    vertices.resize(4);
-    colors.resize(4);
-    indices.resize(6); //2*3
-    vertices[0] = QVector4D(-0.5, -0.5 , 0, 1);
-    vertices[1] = QVector4D( 0.5, -0.5 , 0, 1);
-    vertices[2] = QVector4D( 0.5, 0.5 , 0, 1);
-    vertices[3] = QVector4D(-0.5, 0.5 , 0, 1);
-    // Create colors for the vertices
-    colors[0] = QVector4D(1, 0, 0, 1); // Red
-    colors[1] = QVector4D(0, 1, 0, 1); // Green
-    colors[2] = QVector4D(0, 0, 1, 1); // Blue
-    colors[3] = QVector4D(1, 1, 0, 1); // Yellow
-    // Topology of the mesh ( square )
-    indices[0] = 0; indices[1] = 1; indices[2] = 2;
-    indices[3] = 2; indices[4] = 3; indices[5] = 0;
 
-    glGenVertexArrays(1,&vao);
-    glBindVertexArray(vao);
+    // Square
+    verticesSquare.resize(4);
+    colorsSquare.resize(4);
+    indicesSquare.resize(6);
+    verticesSquare[0] = QVector4D(-0.5, -0.5 , 0, 1);
+    verticesSquare[1] = QVector4D( 0.5, -0.5 , 0, 1);
+    verticesSquare[2] = QVector4D( 0.5, 0.5 , 0, 1);
+    verticesSquare[3] = QVector4D(-0.5, 0.5 , 0, 1);
 
-    glGenBuffers(1,&vboVertices);
-    glBindBuffer(GL_ARRAY_BUFFER,vboVertices);
-    glBufferData(GL_ARRAY_BUFFER, vertices.size()*sizeof(QVector4D),vertices.data(), GL_STATIC_DRAW);
+    colorsSquare[0] = QVector4D(0, 1, 0, 1);
+    colorsSquare[1] = QVector4D(0, 1, 0, 1);
+    colorsSquare[2] = QVector4D(0, 1, 0, 1);
+    colorsSquare[3] = QVector4D(0, 1, 0, 1);
+
+    indicesSquare[0] = 0; indicesSquare[1] = 1; indicesSquare[2] = 2;
+    indicesSquare[3] = 2; indicesSquare[4] = 3; indicesSquare[5] = 0;
+
+    glGenVertexArrays(1,&vaoSquare);
+    glBindVertexArray(vaoSquare);
+
+    glGenBuffers(1,&vboSquareVertices);
+    glBindBuffer(GL_ARRAY_BUFFER,vboSquareVertices);
+    glBufferData(GL_ARRAY_BUFFER, verticesSquare.size()*sizeof(QVector4D),verticesSquare.data(), GL_STATIC_DRAW);
     glVertexAttribPointer(0,4,GL_FLOAT,GL_FALSE,0,nullptr);
     glEnableVertexAttribArray(0);
 
-    glGenBuffers (1, &vboColors);
-    glBindBuffer (GL_ARRAY_BUFFER,vboColors);
-    glBufferData (GL_ARRAY_BUFFER,colors.size()*sizeof(QVector4D),colors.data(), GL_STATIC_DRAW);
+    glGenBuffers (1, &vboSquareColors);
+    glBindBuffer (GL_ARRAY_BUFFER,vboSquareColors);
+    glBufferData (GL_ARRAY_BUFFER,colorsSquare.size()*sizeof(QVector4D),colorsSquare.data(), GL_STATIC_DRAW);
     glVertexAttribPointer (1, 4, GL_FLOAT , GL_FALSE , 0, nullptr);
     glEnableVertexAttribArray (1);
 
-    glGenBuffers (1, &eboIndices);
-    glBindBuffer (GL_ELEMENT_ARRAY_BUFFER , eboIndices);
-    glBufferData (GL_ELEMENT_ARRAY_BUFFER , indices.size() * sizeof (GLuint), indices.data(), GL_STATIC_DRAW);
+    glGenBuffers (1, &eboSquareIndices);
+    glBindBuffer (GL_ELEMENT_ARRAY_BUFFER , eboSquareIndices);
+    glBufferData (GL_ELEMENT_ARRAY_BUFFER , indicesSquare.size() * sizeof (GLuint), indicesSquare.data(), GL_STATIC_DRAW);
+
+    //Triangle
+    verticesTriangle.resize(3);
+    colorsTriangle.resize(3);
+    indicesTriangle.resize(3);
+
+    float widthTriangle{1.0f};
+    float heightTriangle{1.0f};
+
+    verticesTriangle[0] = QVector4D(widthTriangle/2, 0, 0, 1);
+    verticesTriangle[1] = QVector4D(-widthTriangle/2, heightTriangle/2, 0, 1);
+    verticesTriangle[2] = QVector4D(widthTriangle/2, heightTriangle, 0, 1);
+
+    colorsTriangle[0] = QVector4D(0, 0, 1, 1); // Red
+    colorsTriangle[1] = QVector4D(0, 0, 1, 1); // Green
+    colorsTriangle[2] = QVector4D(0, 0, 1, 1); // Blue
+
+    indicesTriangle[0] = 0; indicesTriangle[1] = 1; indicesTriangle[2] = 2;
+
+    glGenVertexArrays(1,&vaoTriangle);
+    glBindVertexArray(vaoTriangle);
+
+    glGenBuffers(1,&vboTriangleVertices);
+    glBindBuffer(GL_ARRAY_BUFFER,vboTriangleVertices);
+    glBufferData(GL_ARRAY_BUFFER, verticesTriangle.size()*sizeof(QVector4D),verticesTriangle.data(), GL_STATIC_DRAW);
+    glVertexAttribPointer(0,4,GL_FLOAT,GL_FALSE,0,nullptr);
+    glEnableVertexAttribArray(0);
+
+    glGenBuffers (1, &vboTriangleColors);
+    glBindBuffer (GL_ARRAY_BUFFER,vboTriangleColors);
+    glBufferData (GL_ARRAY_BUFFER,colorsTriangle.size()*sizeof(QVector4D),colorsTriangle.data(), GL_STATIC_DRAW);
+    glVertexAttribPointer (1, 4, GL_FLOAT , GL_FALSE , 0, nullptr);
+    glEnableVertexAttribArray (1);
+
+    glGenBuffers (1, &eboSquareIndices);
+    glBindBuffer (GL_ELEMENT_ARRAY_BUFFER , eboSquareIndices);
+    glBufferData (GL_ELEMENT_ARRAY_BUFFER , indicesTriangle.size() * sizeof (GLuint), indicesTriangle.data(), GL_STATIC_DRAW);
+
+
+    //Rectangle
+    verticesRectangle.resize(4);
+    colorsRectangle.resize(4);
+    indicesRectangle.resize(6);
+    verticesRectangle[0] = QVector4D(-0.7, -0.3, 0, 1);
+    verticesRectangle[1] = QVector4D(0.7, -0.3, 0, 1);
+    verticesRectangle[2] = QVector4D(0.7, 0.3, 0, 1);
+    verticesRectangle[3] = QVector4D(-0.7, 0.3, 0, 1);
+
+    colorsRectangle[0] = QVector4D(1, 0, 0, 1);
+    colorsRectangle[1] = QVector4D(1, 0, 0, 1);
+    colorsRectangle[2] = QVector4D(1, 0, 0, 1);
+    colorsRectangle[3] = QVector4D(1, 0, 0, 1);
+
+    indicesRectangle[0] = 0; indicesRectangle[1] = 1; indicesRectangle[2] = 2;
+    indicesRectangle[3] = 2; indicesRectangle[4] = 3; indicesRectangle[5] = 0;
+
+    glGenVertexArrays(1,&vaoRectangle);
+    glBindVertexArray(vaoRectangle);
+
+    glGenBuffers(1,&vboRectangleVertices);
+    glBindBuffer(GL_ARRAY_BUFFER,vboRectangleVertices);
+    glBufferData(GL_ARRAY_BUFFER, verticesRectangle.size()*sizeof(QVector4D),verticesRectangle.data(), GL_STATIC_DRAW);
+    glVertexAttribPointer(0,4,GL_FLOAT,GL_FALSE,0,nullptr);
+    glEnableVertexAttribArray(0);
+
+    glGenBuffers (1, &vboRectangleColors);
+    glBindBuffer (GL_ARRAY_BUFFER,vboRectangleColors);
+    glBufferData (GL_ARRAY_BUFFER,colorsRectangle.size()*sizeof(QVector4D),colorsRectangle.data(), GL_STATIC_DRAW);
+    glVertexAttribPointer (1, 4, GL_FLOAT , GL_FALSE , 0, nullptr);
+    glEnableVertexAttribArray (1);
+
+    glGenBuffers (1, &eboRectangleIndices);
+    glBindBuffer (GL_ELEMENT_ARRAY_BUFFER , eboRectangleIndices);
+    glBufferData (GL_ELEMENT_ARRAY_BUFFER , indicesRectangle.size() * sizeof (GLuint), indicesRectangle.data(), GL_STATIC_DRAW);
 }
 
 void OpenGLWidget::destroyVBOs() {
     makeCurrent ();
-    glDeleteBuffers(1, &vboVertices);
-    glDeleteBuffers (1, &vboColors);
-    glDeleteBuffers (1, &eboIndices);
-    glDeleteVertexArrays (1, &vao);
-    vboVertices=0;
-    eboIndices=0;
-    vboColors=0;
-    vao=0;
+    glDeleteBuffers(1, &vboSquareVertices);
+    glDeleteBuffers (1, &vboSquareColors);
+    glDeleteBuffers (1, &eboSquareIndices);
+    glDeleteVertexArrays (1, &vaoSquare);
+    vboSquareVertices=0;
+    eboSquareIndices=0;
+    vboSquareColors=0;
+    vaoSquare=0;
 }
 
 void OpenGLWidget::keyPressEvent(QKeyEvent *event)
@@ -255,16 +352,37 @@ void OpenGLWidget::animate(){
         playerPosY = -0.8f;
     }
 
+    if(blinkScreenTime > 0){
+        blinkScreenTime -= elTime;
+    }
+
+    boolean isMegaBullet = shootingCounter % 5 == 0;
+    float deltaColision = isMegaBullet ? 0.16f : 0.08f;
+    float bulletSpeed = isMegaBullet ? 3.5f : 2.5f;
+    float bulletXColision = isMegaBullet ? 0.65f : 0.7f;
+
+
+
     //projectile
     if(shooting){
-        projectilePos[0] += 3.0f*elTime;
-        if(projectilePos[0] > 0.8f && std::fabs(projectilePos[1] - targetPosY) < 0.1f){
-             numHits++;
-             emit updateHitsLabel(QString("Hits: %1").arg(numHits));
+        yBulletSpeed += isMegaBullet ? 0 : gravityAcc*elTime;
+
+        projectilePos[0] += bulletSpeed*elTime;
+        projectilePos[1] -= yBulletSpeed*elTime;
+        if(projectilePos[0] > bulletXColision && std::fabs(projectilePos[1] - targetPosY) < deltaColision){
+             allyHits++;
+             emit updateHitsLabel(QString("Hits: %1").arg(allyHits));
+             blinkScreenTime = 0.1f;
+             shootingCounter++;
              shooting = false;
-        } else if(projectilePos[0] > 1.0f){
+             yBulletSpeed = 0;
+        } else if(projectilePos[0] > 1.0f || projectilePos[1] < -1.0f){
+             shootingCounter++;
              shooting = false;
+             yBulletSpeed = 0;
         }
+    } else {
+        yBulletSpeed = 0;
     }
 
     update();

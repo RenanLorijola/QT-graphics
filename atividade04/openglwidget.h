@@ -19,14 +19,32 @@ public:
     explicit OpenGLWidget(QWidget *parent = nullptr);
     ~OpenGLWidget();
 
-    GLuint vboVertices{0};
-    GLuint vboColors{0};
-    GLuint eboIndices{0};
-    GLuint vao{0};
+    GLuint vboSquareVertices{0};
+    GLuint vboSquareColors{0};
+    GLuint eboSquareIndices{0};
+    GLuint vaoSquare{0};
 
-    std::vector<QVector4D> vertices;
-    std::vector<QVector4D> colors;
-    std::vector<GLuint> indices;
+    GLuint vboTriangleVertices{0};
+    GLuint vboTriangleColors{0};
+    GLuint eboTriangleIndices{0};
+    GLuint vaoTriangle{0};
+
+    GLuint vboRectangleVertices{0};
+    GLuint vboRectangleColors{0};
+    GLuint eboRectangleIndices{0};
+    GLuint vaoRectangle{0};
+
+    std::vector<QVector4D> verticesSquare;
+    std::vector<QVector4D> colorsSquare;
+    std::vector<GLuint> indicesSquare;
+
+    std::vector<QVector4D> verticesTriangle;
+    std::vector<QVector4D> colorsTriangle;
+    std::vector<GLuint> indicesTriangle;
+
+    std::vector<QVector4D> verticesRectangle;
+    std::vector<QVector4D> colorsRectangle;
+    std::vector<GLuint> indicesRectangle;
 
     GLuint shaderProgram{0};
 
@@ -42,12 +60,20 @@ public:
     float targetPosYOffset{2.0f};
     float targetPosY{0};
 
+    float blinkScreenTime{0};
+
+    float yBulletSpeed{0};
+    float gravityAcc{2.0f};
+
     QTimer timer;
     QElapsedTimer elapsedTime;
 
     bool shooting{false};
+    int shootingCounter{1};
+    int projectileTraceSize{50};
     std::array<float,2> projectilePos;
-    int numHits{0};
+    int allyHits{0};
+    int enemyHits{0};
 
     void keyPressEvent(QKeyEvent *event) override;
     void keyReleaseEvent(QKeyEvent *event) override;

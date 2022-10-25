@@ -35,6 +35,8 @@ void OpenGLWidget::paintGL(){
     glUseProgram(shaderProgram);
     GLint locScaling{glGetUniformLocation(shaderProgram, "scaling")};
     GLint locTranslation{glGetUniformLocation(shaderProgram, "translation")};
+    GLint locColor{glGetUniformLocation(shaderProgram, "color")};
+    GLint locSolidColor{glGetUniformLocation(shaderProgram, "solidColor")};
 
     //Target
     glUniform4f(locTranslation, 0.8f, targetPosY, 0, 0);
@@ -59,7 +61,9 @@ void OpenGLWidget::paintGL(){
 
     //Projectile
     if(shooting){
+        glUniform1i(locSolidColor, 1);
         glUniform4f(locTranslation, projectilePos[0], projectilePos[1], 0, 0);
+        glUniform4f(locColor, projectilePos[0], projectilePos[1], 0, 0);
         if(shootingCounter % 5 == 0){
             glUniform1f(locScaling,0.08f);
         } else {
@@ -67,6 +71,7 @@ void OpenGLWidget::paintGL(){
         }
         glDrawElements(GL_TRIANGLES, indicesRectangle.size(), GL_UNSIGNED_INT, 0);
     }
+    glUniform1i(locSolidColor, 0);
 
     //Ammo
     glUniform1f(locScaling,0.01f);
@@ -365,7 +370,7 @@ void OpenGLWidget::animate(){
 
     //projectile
     if(shooting){
-        yBulletSpeed += isMegaBullet ? 0 : gravityAcc*elTime;
+         yBulletSpeed += isMegaBullet ? 0 : gravityAcc*elTime;
 
         projectilePos[0] += bulletSpeed*elTime;
         projectilePos[1] -= yBulletSpeed*elTime;

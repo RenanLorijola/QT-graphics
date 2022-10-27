@@ -38,6 +38,53 @@ void OpenGLWidget::paintGL(){
     GLint locColor{glGetUniformLocation(shaderProgram, "color")};
     GLint locSolidColor{glGetUniformLocation(shaderProgram, "solidColor")};
 
+    glBindVertexArray(vaoRectangle);
+    if(shooting){
+        float projectileTraceYDeslocation = 0;
+        float maximumDistance = 0.08f;
+        float projectileTime = projectileTimeInScreen - maximumDistance;
+
+        boolean isMegaBullet = shootingCounter % 5 == 0;
+        if(isMegaBullet){
+            glUniform1f(locScaling,0.08f);
+        } else {
+            glUniform1f(locScaling,0.02f);
+        }
+
+        //Projectile Trace
+        glUniform1i(locSolidColor, 1);
+
+        int items{20};
+        for(int i = 0; i < items; i++){
+            projectileTime+= maximumDistance/items;
+            if(!isMegaBullet){
+                projectileTraceYDeslocation = projectileTime*projectileTime*gravityAcc;
+            }
+            glUniform4f(locColor, 0.815/items*(i+1), 0.725f/items*(i+1), 0.45f/items*(i+1), 0);
+            glUniform4f(locTranslation, -0.6f + bulletSpeedX*projectileTime, lastBulletYOrigin - projectileTraceYDeslocation, 0, 0);
+            glDrawElements(GL_TRIANGLES, indicesRectangle.size(), GL_UNSIGNED_INT, 0);
+        }
+
+
+        glUniform1i(locSolidColor, 0);
+
+        //Projectile
+        glUniform4f(locTranslation, projectilePos[0], projectilePos[1], 0, 0);
+        glDrawElements(GL_TRIANGLES, indicesRectangle.size(), GL_UNSIGNED_INT, 0);
+    }
+
+    //Ammo
+    glUniform1f(locScaling,0.01f);
+    if(shootingCounter % 5){
+        for(int i = shootingCounter % 5; i < 5; i ++){
+            glUniform4f(locTranslation, -0.93f + 0.05f*(i-1), 0.93f, 0, 0);
+            glDrawElements(GL_TRIANGLES, indicesRectangle.size(), GL_UNSIGNED_INT, 0);
+        }
+    }
+    glUniform1f(locScaling, 0.04f);
+    glUniform4f(locTranslation, -0.7f, 0.93f, 0, 0);
+    glDrawElements(GL_TRIANGLES, indicesRectangle.size(), GL_UNSIGNED_INT, 0);
+
     //Target
     glUniform4f(locTranslation, 0.8f, targetPosY, 0, 0);
     glUniform1f(locScaling, 0.2f);
@@ -56,34 +103,6 @@ void OpenGLWidget::paintGL(){
     } else {
         glClearColor(0,0,0,1);
     }
-
-    glBindVertexArray(vaoRectangle);
-
-    //Projectile
-    if(shooting){
-        glUniform1i(locSolidColor, 1);
-        glUniform4f(locTranslation, projectilePos[0], projectilePos[1], 0, 0);
-        glUniform4f(locColor, projectilePos[0], projectilePos[1], 0, 0);
-        if(shootingCounter % 5 == 0){
-            glUniform1f(locScaling,0.08f);
-        } else {
-            glUniform1f(locScaling,0.02f);
-        }
-        glDrawElements(GL_TRIANGLES, indicesRectangle.size(), GL_UNSIGNED_INT, 0);
-    }
-    glUniform1i(locSolidColor, 0);
-
-    //Ammo
-    glUniform1f(locScaling,0.01f);
-    if(shootingCounter % 5){
-        for(int i = shootingCounter % 5; i < 5; i ++){
-            glUniform4f(locTranslation, -0.9f + 0.05f*(i-1), 0.9f, 0, 0);
-            glDrawElements(GL_TRIANGLES, indicesRectangle.size(), GL_UNSIGNED_INT, 0);
-        }
-    }
-    glUniform1f(locScaling, 0.04f);
-    glUniform4f(locTranslation, -0.67f, 0.9f, 0, 0);
-    glDrawElements(GL_TRIANGLES, indicesRectangle.size(), GL_UNSIGNED_INT, 0);
 }
 
 void OpenGLWidget::createShaders(){
@@ -177,8 +196,8 @@ void OpenGLWidget::createVBOs() {
     verticesSquare[3] = QVector4D(-0.5, 0.5 , 0, 1);
 
     colorsSquare[0] = QVector4D(0, 1, 0, 1);
-    colorsSquare[1] = QVector4D(0, 1, 0, 1);
-    colorsSquare[2] = QVector4D(0, 1, 0, 1);
+    colorsSquare[1] = QVector4D(1, 0, 0, 1);
+    colorsSquare[2] = QVector4D(1, 0, 0, 1);
     colorsSquare[3] = QVector4D(0, 1, 0, 1);
 
     indicesSquare[0] = 0; indicesSquare[1] = 1; indicesSquare[2] = 2;
@@ -215,9 +234,9 @@ void OpenGLWidget::createVBOs() {
     verticesTriangle[1] = QVector4D(-widthTriangle/2, heightTriangle/2, 0, 1);
     verticesTriangle[2] = QVector4D(widthTriangle/2, heightTriangle, 0, 1);
 
-    colorsTriangle[0] = QVector4D(0, 0, 1, 1); // Red
-    colorsTriangle[1] = QVector4D(0, 0, 1, 1); // Green
-    colorsTriangle[2] = QVector4D(0, 0, 1, 1); // Blue
+    colorsTriangle[0] = QVector4D(0, 0, 1, 1);
+    colorsTriangle[1] = QVector4D(1, 0, 0, 1);
+    colorsTriangle[2] = QVector4D(0, 0, 1, 1);
 
     indicesTriangle[0] = 0; indicesTriangle[1] = 1; indicesTriangle[2] = 2;
 
@@ -250,10 +269,10 @@ void OpenGLWidget::createVBOs() {
     verticesRectangle[2] = QVector4D(0.7, 0.3, 0, 1);
     verticesRectangle[3] = QVector4D(-0.7, 0.3, 0, 1);
 
-    colorsRectangle[0] = QVector4D(1, 0, 0, 1);
-    colorsRectangle[1] = QVector4D(1, 0, 0, 1);
-    colorsRectangle[2] = QVector4D(1, 0, 0, 1);
-    colorsRectangle[3] = QVector4D(1, 0, 0, 1);
+    colorsRectangle[0] = QVector4D(0.815f, 0.725f, 0.45f, 1);
+    colorsRectangle[1] = QVector4D(0.976f, 0.776f, 0.658f, 1);
+    colorsRectangle[2] = QVector4D(0.47f, 0.4f, 0.38f, 1);
+    colorsRectangle[3] = QVector4D(0.69f, 0.619f, 0.415f, 1);
 
     indicesRectangle[0] = 0; indicesRectangle[1] = 1; indicesRectangle[2] = 2;
     indicesRectangle[3] = 2; indicesRectangle[4] = 3; indicesRectangle[5] = 0;
@@ -309,7 +328,7 @@ void OpenGLWidget::keyPressEvent(QKeyEvent *event)
             if(!shooting){
                 shooting = true;
                 projectilePos[0] = -0.6;
-                projectilePos[1] = playerPosY;
+                lastBulletYOrigin = playerPosY;
             }
             break;
         case Qt::Key_Escape:
@@ -363,31 +382,29 @@ void OpenGLWidget::animate(){
 
     boolean isMegaBullet = shootingCounter % 5 == 0;
     float deltaColision = isMegaBullet ? 0.16f : 0.08f;
-    float bulletSpeed = isMegaBullet ? 3.5f : 2.5f;
+    bulletSpeedX = isMegaBullet ? 3.5f : 2.5f;
     float bulletXColision = isMegaBullet ? 0.65f : 0.7f;
 
 
 
     //projectile
     if(shooting){
-         yBulletSpeed += isMegaBullet ? 0 : gravityAcc*elTime;
+        projectileTimeInScreen += elTime;
 
-        projectilePos[0] += bulletSpeed*elTime;
-        projectilePos[1] -= yBulletSpeed*elTime;
+        projectilePos[0] += bulletSpeedX*elTime;
+        projectilePos[1] = isMegaBullet ? lastBulletYOrigin : lastBulletYOrigin - projectileTimeInScreen*projectileTimeInScreen*gravityAcc;
         if(projectilePos[0] > bulletXColision && std::fabs(projectilePos[1] - targetPosY) < deltaColision){
-             allyHits++;
-             emit updateHitsLabel(QString("Hits: %1").arg(allyHits));
-             blinkScreenTime = 0.1f;
-             shootingCounter++;
-             shooting = false;
-             yBulletSpeed = 0;
+            projectileTimeInScreen = 0;
+            allyHits++;
+            emit updateHitsLabel(QString("Hits: %1").arg(allyHits));
+            blinkScreenTime = 0.1f;
+            shootingCounter++;
+            shooting = false;
         } else if(projectilePos[0] > 1.0f || projectilePos[1] < -1.0f){
-             shootingCounter++;
-             shooting = false;
-             yBulletSpeed = 0;
+            projectileTimeInScreen = 0;
+            shootingCounter++;
+            shooting = false;
         }
-    } else {
-        yBulletSpeed = 0;
     }
 
     update();

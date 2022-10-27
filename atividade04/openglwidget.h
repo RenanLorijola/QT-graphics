@@ -62,7 +62,7 @@ public:
 
     float blinkScreenTime{0};
 
-    float yBulletSpeed{0};
+    float bulletSpeedX{0};
     float gravityAcc{2.0f};
 
     QTimer timer;
@@ -70,7 +70,8 @@ public:
 
     bool shooting{false};
     int shootingCounter{1};
-    int projectileTraceSize{50};
+    float projectileTimeInScreen{0};
+    float lastBulletYOrigin{0};
     std::array<float,2> projectilePos;
     int allyHits{0};
     int enemyHits{0};

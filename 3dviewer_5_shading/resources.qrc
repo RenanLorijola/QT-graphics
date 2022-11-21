@@ -1,0 +1,14 @@
+<RCC>
+    <qresource prefix="/shaders">
+        <file>vzdepth.glsl</file>
+        <file>fzdepth.glsl</file>
+        <file>fflat.glsl</file>
+        <file>fgouraud.glsl</file>
+        <file>fnormal.glsl</file>
+        <file>fphong.glsl</file>
+        <file>vflat.glsl</file>
+        <file>vgouraud.glsl</file>
+        <file>vnormal.glsl</file>
+        <file>vphong.glsl</file>
+    </qresource>
+</RCC>

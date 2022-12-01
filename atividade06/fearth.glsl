@@ -24,9 +24,9 @@ vec4 Phong(vec3 n)
     float NdotL = dot(N,L);
     vec3 R = normalize(2.0 *NdotL * N - L);
     float Kd = max(NdotL, 0.0);
-    float nuvem = texture(layerCloud, vec2(ftextCoord.x + cloudOffset, ftextCoord.y)).r;
-    vec4 vnuvem = vec4(nuvem ,nuvem ,nuvem ,1);
-    vec4 mixtex = mix(texture(layerEarth, ftextCoord), vnuvem, .6);
+    float contrnuvem = texture(layerCloud, vec2(ftextCoord.x + cloudOffset, ftextCoord.y)).r;
+
+    vec4 mixtex = mix(texture(layerEarth, ftextCoord), texture(layerCloud, vec2(ftextCoord.x + cloudOffset, ftextCoord.y)), contrnuvem);
     vec4 diffuse = Kd * mixtex;
     vec4 ambient = ambientProduct;
     return ambient + diffuse;

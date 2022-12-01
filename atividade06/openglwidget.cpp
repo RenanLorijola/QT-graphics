@@ -133,7 +133,6 @@ void OpenGLWidget::paintGL()
         if(cloudOffset > 1){
             cloudOffset -= 1;
         }
-        qDebug() << QString::number(cloudOffset, 'f', 2);
         auto locCloudOffset{glGetUniformLocation(shaderProgramID, "cloudOffset")};
         glUniform1f(locCloudOffset, cloudOffset);
     }

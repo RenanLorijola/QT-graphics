@@ -46,6 +46,8 @@ void OpenGLWidget::paintGL()
     else
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
+    float elTime{elapsedTime.restart()/1000.0f};
+
     //    glEnable(GL_CULL_FACE);
     //    glCullFace(GL_BACK);
 
@@ -53,7 +55,6 @@ void OpenGLWidget::paintGL()
 
     model->modelMatrix.setToIdentity();
     model->modelMatrix.translate(0, 0, zoom);
-    //trackBall.setRotation(QVector3D(0.0f, 0.05f, 0.0f),0.02f);
     model->modelMatrix.rotate(trackBall.getRotation());
     model->rescaleModelMatrix();
 
@@ -120,19 +121,22 @@ void OpenGLWidget::paintGL()
     case 8:
         glBindTexture(GL_TEXTURE_CUBE_MAP, model->textureIDCubeMap);
         break;
-    case 9: // terra eh redonda
-    {
-        glUniform1i(glGetUniformLocation(shaderProgramID, "layerLower"), 5);
-        glActiveTexture(GL_TEXTURE1);
+    case 11:
+        glUniform1i(glGetUniformLocation(shaderProgramID, "layerEarth"), 5);
+        glActiveTexture(GL_TEXTURE5);
         glBindTexture(GL_TEXTURE_2D, model->textureIDEarth);
 
-        glUniform1i(glGetUniformLocation(shaderProgramID, "layerUpper"), 6);
-        glActiveTexture(GL_TEXTURE2);
+        glUniform1i(glGetUniformLocation(shaderProgramID, "layerCloud"), 6);
+        glActiveTexture(GL_TEXTURE6);
         glBindTexture(GL_TEXTURE_2D, model->textureIDCloud);
-        break;
+        cloudOffset+= elTime * 0.05f;
+        if(cloudOffset > 1){
+            cloudOffset -= 1;
+        }
+        qDebug() << QString::number(cloudOffset, 'f', 2);
+        auto locCloudOffset{glGetUniformLocation(shaderProgramID, "cloudOffset")};
+        glUniform1f(locCloudOffset, cloudOffset);
     }
-    }
-    // switch
 
     glDrawElements(GL_TRIANGLES, model->numFaces * 3, GL_UNSIGNED_INT, nullptr);
 }
@@ -410,7 +414,7 @@ void OpenGLWidget::changeShader(int shaderIndex)
         return;
     model->currentShader = shaderIndex;
 
-    if (shaderIndex > 1 && shaderIndex < 5)
+    if ((shaderIndex > 1 && shaderIndex < 5) || (shaderIndex > 8 && shaderIndex < 11))
         emit enableSliderHighlight(true);
     else
         emit enableSliderHighlight(false);

@@ -67,6 +67,8 @@ public:
     void loadCubeMapTexture(std::shared_ptr<Model>);
     void loadNormalMapTexture(std::shared_ptr<Model>);
 
+    QElapsedTimer elapsedTime;
+    float cloudOffset{0};
 
 signals:
     void statusBarMessage(QString);

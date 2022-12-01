@@ -18,6 +18,12 @@
         <file>vnormalmap.glsl</file>
         <file>vtexture.glsl</file>
         <file>vtexturelayers.glsl</file>
+        <file>fphong_normal.glsl</file>
+        <file>vphong_normal.glsl</file>
+        <file>ftoon.glsl</file>
+        <file>vtoon.glsl</file>
+        <file>fearth.glsl</file>
+        <file>vearth.glsl</file>
     </qresource>
     <qresource prefix="/textures">
         <file>cubemap/negx.jpg</file>

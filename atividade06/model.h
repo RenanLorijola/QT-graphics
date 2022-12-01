@@ -49,7 +49,10 @@ public:
                                                    ":/shaders/vtexture.glsl",
                                                    ":/shaders/vtexturelayers.glsl",
                                                    ":/shaders/vnormalmap.glsl",
-                                                   ":/shaders/vcubemap.glsl"};
+                                                   ":/shaders/vcubemap.glsl",
+                                                   ":/shaders/vphong_normal.glsl",
+                                                   ":/shaders/vtoon.glsl",
+                                                   ":/shaders/vearth.glsl"};
 
     std::vector<QString> fragmentShaderFileName = {":/shaders/fzdepth.glsl",
                                                    ":/shaders/fnormal.glsl",
@@ -59,7 +62,10 @@ public:
                                                    ":/shaders/ftexture.glsl",
                                                    ":/shaders/ftexturelayers.glsl",
                                                    ":/shaders/fnormalmap.glsl",
-                                                   ":/shaders/fcubemap.glsl"};
+                                                   ":/shaders/fcubemap.glsl",
+                                                   ":/shaders/fphong_normal.glsl",
+                                                   ":/shaders/ftoon.glsl",
+                                                   ":/shaders/fearth.glsl"};
     std::vector<unsigned> shaderProgram;
 
     Material material;
